@@ -1,2 +1,2 @@
-# imaginecup-2016
+# ImagineCup 2016
 Logan Guidry, Julian Januzska, Brandon Valenzuela
