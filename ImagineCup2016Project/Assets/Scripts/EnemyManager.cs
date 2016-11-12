@@ -16,6 +16,11 @@ public class EnemyManager : MonoBehaviour
 
 	public float cooldown;
 
+	Vector2 velocity = Vector2.zero;
+	public float acceleration;
+
+	private string currentDirection = "right";
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -53,9 +58,9 @@ public class EnemyManager : MonoBehaviour
 	{
 		// Only detect player [DON'T USE]
 		//int layerMask = 1 << 8;
-
+		idleMovement ();
 		// Fire raycast
-		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 10f);//, layerMask);
+		RaycastHit2D hit = Physics2D.Raycast(transform.position + new Vector3(1.0f,0.0f,0.0f), GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 10f);//, layerMask);
 
 		// Checks if a raycast hit the player
 		detectedPlayer = false;
@@ -67,6 +72,41 @@ public class EnemyManager : MonoBehaviour
 		{
 			print("detected player");
 		}
+	}
+
+	void idleMovement ()
+	{
+	
+		acceleration = 0.1f;
+		velocity = GetComponent<Rigidbody2D>().velocity;
+
+		velocity += new Vector2(-acceleration, 0);
+
+		GetComponent<Rigidbody2D>().velocity = velocity;
+
+
+		RaycastHit2D hit = Physics2D.Raycast (transform.position + new Vector3(3.0f,0.0f,0.0f), GameManager.Player.transform.position + new Vector3 (0, 0.5f, 0) - transform.position, 10f);//, layerMask);
+		
+		// Checks if a raycast hit the player
+		detectedPlayer = false;
+		if (hit.transform != null && hit.transform.tag == "Player")
+			detectedPlayer = true;
+
+
+		if (velocity.x > 0) {
+		
+
+
+			currentDirection = "right";
+
+		
+		} else if (velocity.x < 0) {
+		
+			currentDirection = "left";
+		}
+			
+
+	
 	}
 
 	void OnDrawGizmos()
