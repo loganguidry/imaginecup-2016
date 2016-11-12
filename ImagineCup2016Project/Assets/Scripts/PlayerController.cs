@@ -5,12 +5,17 @@ public class PlayerController : MonoBehaviour
 {
 	static public float MinimumX;
 	public float acceleration;
+	public float jumpCheckGroundDist;
+	public GameObject bangPowTextPopup;
 	Vector2 velocity = Vector2.zero;
 	Transform weaponAnchor;
+	Transform userInterface;
+	float lastJumpTime;
 
 	void Start()
 	{
-		weaponAnchor = transform.Find("WeaponAnchor");	
+		weaponAnchor = transform.Find("WeaponAnchor");
+		userInterface = GameObject.Find("UI_Canvas").transform;
 	}
 
 	void Update()
@@ -31,7 +36,7 @@ public class PlayerController : MonoBehaviour
 			velocity += new Vector2(acceleration, 0);
 
 		// Jump
-		if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
 			velocity += new Vector2(0, -velocity.y + 5);
 
 		// Keep in the level
@@ -64,10 +69,17 @@ public class PlayerController : MonoBehaviour
 	{
 		print("bang pow");
 		CameraShake.Kick(0.05f);
+		GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
+		clonedPowText.transform.SetParent(userInterface);
 	}
 
 	void OnDrawGizmos()
 	{
-		Gizmos.DrawLine(transform.position, transform.position + new Vector3(velocity.x, velocity.y, 0));
+		Gizmos.DrawLine(transform.position + new Vector3(0, 0.5f, 0), transform.position + new Vector3(velocity.x, velocity.y, 0));
+
+		// Ground checks
+		Gizmos.color = Color.red;
+		Gizmos.DrawLine(transform.position + new Vector3(-0.3f, 0, 0), transform.position + new Vector3(-0.3f, 0, 0) + new Vector3(0, -jumpCheckGroundDist, 0));
+		Gizmos.DrawLine(transform.position + new Vector3(0.3f, 0, 0), transform.position + new Vector3(0.3f, 0, 0) + new Vector3(0, -jumpCheckGroundDist, 0));
 	}
 }
