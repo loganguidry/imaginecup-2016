@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class EnemyManager : MonoBehaviour {
-
-
+public class EnemyManager : MonoBehaviour
+{
 	//Remaining 'health' of the enemy. (Pistols can take away 1, rifles,2.5, maybe boomerangs 5?)
 	private float enemyHealth;
 
@@ -15,26 +14,22 @@ public class EnemyManager : MonoBehaviour {
 	//Bool for if they have detected player yet or not
 	private bool detectedPlayer;
 
-	//Player reference
-	public GameObject player;
-
 	public float cooldown;
 
 	// Use this for initialization
-	void Start () {
-
+	void Start ()
+	{
 		//Set starting health to 5 and isAlive to true
 		enemyHealth = 5.0f;
 		isAlive = true;
 		detectedPlayer = false;
 
 		cooldown = 5;
-	
 	}
 
-	void FixedUpodate ()
+	/*
+	void FixedUpdate ()
 	{
-
 		//Raycast left
 		Ray rayLeft = new Ray (transform.position, new Vector3(-5.0f,0.0f,0.0f));
 		
@@ -51,19 +46,33 @@ public class EnemyManager : MonoBehaviour {
 			
 			Debug.Log("Test");
 		}
-	
 	}
-	// Update is called once per frame
-	void Update () {
+	*/
 
-	
-		if (detectedPlayer == true) {
-		
-		
-		
-		
+	void Update()
+	{
+		// Only detect player [DON'T USE]
+		//int layerMask = 1 << 8;
+
+		// Fire raycast
+		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 10f);//, layerMask);
+
+		// Checks if a raycast hit the player
+		detectedPlayer = false;
+		if (hit.transform != null && hit.transform.tag == "Player")
+			detectedPlayer = true;
+
+		// The player has been detected
+		if (detectedPlayer)
+		{
+			print("detected player");
 		}
 	}
 
-
+	void OnDrawGizmos()
+	{
+		if (detectedPlayer)
+			Gizmos.color = Color.red;
+		Gizmos.DrawLine(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0));
+	}
 }
