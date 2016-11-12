@@ -152,7 +152,7 @@ public class PlayerController : MonoBehaviour
 	void FireWeapon()
 	{
 		// Shake camera
-		CameraShake.Kick(0.05f);
+		CameraShake.Kick(0.025f);
 
 		// Text popup
 		GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;

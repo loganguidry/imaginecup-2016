@@ -56,11 +56,12 @@ public class EnemyManager : MonoBehaviour
 
 	void Update()
 	{
-		// Only detect player [DON'T USE]
-		//int layerMask = 1 << 8;
-		idleMovement ();
+		// Don't detect enemies
+		int layerMask = 1 << 9;
+		layerMask = ~layerMask;
+
 		// Fire raycast
-		RaycastHit2D hit = Physics2D.Raycast(transform.position + new Vector3(1.0f,0.0f,0.0f), GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 10f);//, layerMask);
+		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 10f, layerMask);
 
 		// Checks if a raycast hit the player
 		detectedPlayer = false;
@@ -72,6 +73,8 @@ public class EnemyManager : MonoBehaviour
 		{
 			print("detected player");
 		}
+		else
+			idleMovement ();
 	}
 
 	void idleMovement ()
@@ -80,18 +83,9 @@ public class EnemyManager : MonoBehaviour
 		acceleration = 0.1f;
 		velocity = GetComponent<Rigidbody2D>().velocity;
 
-		velocity += new Vector2(-acceleration, 0);
+		//velocity += new Vector2(-acceleration, 0);
 
 		GetComponent<Rigidbody2D>().velocity = velocity;
-
-
-		RaycastHit2D hit = Physics2D.Raycast (transform.position + new Vector3(3.0f,0.0f,0.0f), GameManager.Player.transform.position + new Vector3 (0, 0.5f, 0) - transform.position, 10f);//, layerMask);
-		
-		// Checks if a raycast hit the player
-		detectedPlayer = false;
-		if (hit.transform != null && hit.transform.tag == "Player")
-			detectedPlayer = true;
-
 
 		if (velocity.x > 0) {
 		
