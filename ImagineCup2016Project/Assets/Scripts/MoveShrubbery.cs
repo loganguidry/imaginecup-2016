@@ -11,6 +11,7 @@ public class MoveShrubbery : MonoBehaviour
 	{
 		float randomHeight = Random.Range(lowestPosition, highestPosition);
 		transform.position = new Vector3((Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 0)) + new Vector3(Random.Range(1, 10), 0, 0)).x, randomHeight, 0);
+		moveSpeed = -randomHeight;
 	}
 
 	void Update()
