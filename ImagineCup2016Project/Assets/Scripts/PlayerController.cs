@@ -5,7 +5,7 @@ public class PlayerController : MonoBehaviour
 {
 	static public float MinimumX;
 	public float acceleration;
-	public float jumpCheckGroundDist;
+	public float jumpPower;
 	public GameObject bangPowTextPopup;
 	Vector2 velocity = Vector2.zero;
 	Transform weaponAnchor;
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
 		// Jump
 		if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
-			velocity += new Vector2(0, -velocity.y + 5);
+			velocity += new Vector2(0, -velocity.y + jumpPower);
 
 		// Keep in the level
 		if (transform.position.x < MinimumX)
@@ -67,7 +67,6 @@ public class PlayerController : MonoBehaviour
 
 	void FireWeapon()
 	{
-		print("bang pow");
 		CameraShake.Kick(0.05f);
 		GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
 		clonedPowText.transform.SetParent(userInterface);
@@ -76,10 +75,5 @@ public class PlayerController : MonoBehaviour
 	void OnDrawGizmos()
 	{
 		Gizmos.DrawLine(transform.position + new Vector3(0, 0.5f, 0), transform.position + new Vector3(velocity.x, velocity.y, 0));
-
-		// Ground checks
-		Gizmos.color = Color.red;
-		Gizmos.DrawLine(transform.position + new Vector3(-0.3f, 0, 0), transform.position + new Vector3(-0.3f, 0, 0) + new Vector3(0, -jumpCheckGroundDist, 0));
-		Gizmos.DrawLine(transform.position + new Vector3(0.3f, 0, 0), transform.position + new Vector3(0.3f, 0, 0) + new Vector3(0, -jumpCheckGroundDist, 0));
 	}
 }
