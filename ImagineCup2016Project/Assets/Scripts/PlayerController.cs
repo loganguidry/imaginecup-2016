@@ -7,15 +7,25 @@ public class PlayerController : MonoBehaviour
 	public float acceleration;
 	public float jumpPower;
 	public GameObject bangPowTextPopup;
+	public GameObject bulletPrefab;
 	Vector2 velocity = Vector2.zero;
 	Transform weaponAnchor;
 	Transform userInterface;
-	float lastJumpTime;
+
+	GameObject pistolWeapon;
+	GameObject rifleWeapon;
+	GameObject currentWeapon;
 
 	void Start()
 	{
 		weaponAnchor = transform.Find("WeaponAnchor");
 		userInterface = GameObject.Find("UI_Canvas").transform;
+
+		// Weapons
+		pistolWeapon = weaponAnchor.Find("Pistol").gameObject;
+		rifleWeapon = weaponAnchor.Find("Rifle").gameObject;
+		rifleWeapon.GetComponent<SpriteRenderer>().enabled = false;
+		currentWeapon = pistolWeapon;
 	}
 
 	void Update()
@@ -67,9 +77,23 @@ public class PlayerController : MonoBehaviour
 
 	void FireWeapon()
 	{
+		// Shake camera
 		CameraShake.Kick(0.05f);
+
+		// Text popup
 		GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
 		clonedPowText.transform.SetParent(userInterface);
+
+		// Display bullet trail
+		if (currentWeapon.name == "Pistol" || currentWeapon.name == "Rifle")
+		{
+			GameObject clonedBullet = Instantiate(bulletPrefab, currentWeapon.transform.Find("Nozzle").position, weaponAnchor.rotation) as GameObject;
+		}
+
+		// Play gunshot sound
+		Camera.main.transform.GetChild(0).GetComponent<AudioSource>().PlayOneShot(currentWeapon.GetComponent<WeaponProperties>().GunshotSound);
+	
+		// Fire a raycast to hit objects
 	}
 
 	void OnDrawGizmos()
