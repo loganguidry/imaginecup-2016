@@ -4,6 +4,7 @@ using System.Collections;
 
 public class MainMenuManager : MonoBehaviour
 {
+	public float cameraMoveAmount;
 	private Vector3 startPos;
 
 	void Start ()
@@ -14,9 +15,11 @@ public class MainMenuManager : MonoBehaviour
 	void Update ()
 	{
 		// Start game
+
 		if (Input.anyKeyDown)
 			SceneManager.LoadScene("level1");
 
 		// Move camera slightly
+		transform.position = startPos;
 	}
 }

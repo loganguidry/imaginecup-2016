@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class ShowTrainInterior : MonoBehaviour
@@ -13,17 +14,20 @@ public class ShowTrainInterior : MonoBehaviour
 
 	void Update ()
 	{
-		if (GameManager.Player.GetComponent<BoxCollider2D>().IsTouching(triggerZone))
+		if (SceneManager.GetActiveScene().name == "level1")
 		{
-			Color c = GetComponent<SpriteRenderer>().color;
-			float newA = Mathf.Max(c.a - fadeSpeed * Time.deltaTime, 0f);
-			GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, newA);
-		}
-		else
-		{
-			Color c = GetComponent<SpriteRenderer>().color;
-			float newA = Mathf.Min(c.a + fadeSpeed * Time.deltaTime, 1f);
-			GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, newA);
+			if (GameManager.Player.GetComponent<BoxCollider2D>().IsTouching(triggerZone))
+			{
+				Color c = GetComponent<SpriteRenderer>().color;
+				float newA = Mathf.Max(c.a - fadeSpeed * Time.deltaTime, 0f);
+				GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, newA);
+			}
+			else
+			{
+				Color c = GetComponent<SpriteRenderer>().color;
+				float newA = Mathf.Min(c.a + fadeSpeed * Time.deltaTime, 1f);
+				GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, newA);
+			}
 		}
 	}
 }

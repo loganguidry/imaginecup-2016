@@ -3,6 +3,7 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+	static public Transform UserInterface;
 	static public GameObject Player;
 	public float gravity;
 	public float minX;
@@ -14,6 +15,7 @@ public class GameManager : MonoBehaviour
 
 	void Start ()
 	{
+		UserInterface = GameObject.Find("UI_Canvas").transform;
 		Player = GameObject.Find("Player");
 		PlayerHealth = 100f;
 		PlayerController.MinimumX = minX;

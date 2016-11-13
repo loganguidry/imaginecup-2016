@@ -31,6 +31,13 @@ public class EnemyManager : MonoBehaviour
     private float origX;
     private float origY;
 
+	public AudioClip gunshotSound;
+	public GameObject bangPowTextPopup;
+
+	public float jumpPower = 15f;
+	public float minJumpDelay = 3f;
+	float lastJumpTime;
+
     // Use this for initialization
     void Start ()
 	{
@@ -52,15 +59,19 @@ public class EnemyManager : MonoBehaviour
 
 	void Update()
 	{
+		// Weapon cooldown
+		cooldown -= Time.deltaTime;
+
 		// Fire raycast
 		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 5f, layerMask);
 
+		// Check if player Y position is close enough
+		bool closeY = Mathf.Abs(GameManager.Player.transform.position.y - transform.position.y) <= 1.5f;
+
 		// Checks if a raycast hit the player
 		detectedPlayer = false;
-        if (hit.transform != null && hit.transform.tag == "Player")
+        if (hit.transform != null && hit.transform.tag == "Player" && closeY)
         {
-            cooldown -= Time.deltaTime;
-
             if (cooldown <= 0.0f)
             {
                 attackPlayer();
@@ -73,47 +84,74 @@ public class EnemyManager : MonoBehaviour
 		{
             idleMovement();
         }
+
+		// Randomly jump
+		if (Random.Range(0, 100) == 0 && Time.time - lastJumpTime >= minJumpDelay)
+		{
+			lastJumpTime = Time.time;
+			GetComponent<Rigidbody2D>().velocity += new Vector2(0, jumpPower);
+			velocity += new Vector2(0, jumpPower);
+		}
+
+		// Keep in the level
+		if (transform.position.x < PlayerController.MinimumX)
+		{
+			transform.position = new Vector3(PlayerController.MinimumX, transform.position.y, transform.position.z);
+			velocity = new Vector2(0f, velocity.y);
+		}
     }
 
     void attackPlayer()
     {
+		// Create bullet
 		if (GameManager.Player.transform.position.x < transform.position.x)
-        {
-            Instantiate(enemyBullet, new Vector3(transform.position.x  - 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(180, 0, 180)));
-        }
-        else 
-        {
+		{
+			Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(180, 0, 180)));
+			currentDirection = "left";
+		}
+		else
+		{
 			Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.identity);
-        }
+			currentDirection = "right";
+		}
+
+		// Play gunshot sound
+		Camera.main.transform.GetChild(0).GetComponent<AudioSource>().PlayOneShot(gunshotSound);
+
+		// Shake camera
+		CameraShake.Kick(0.025f);
+
+		// Text popup
+		//GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
+		//clonedPowText.transform.SetParent(GameManager.UserInterface);
     }
+
 	void idleMovement ()
 	{
+		// Get velocity
+		velocity = GetComponent<Rigidbody2D>().velocity;
+
         acceleration = 0.1f;
-        velocity = GetComponent<Rigidbody2D>().velocity;
 
-        //velocity += new Vector2(-acceleration, 0);
-
-        if (walkingLeft == true)
+		// Walk back and forth
+        if (walkingLeft)
         {
             transform.localScale = new Vector3(1, 1, 1);
 
             currentDirection = "left";
             velocity += new Vector2(-acceleration, 0);
-            GetComponent<Rigidbody2D>().velocity = velocity;
 
-            if (origX > transform.position.x + 2.5f)
+            if (origX > transform.position.x + 2f)
             {
                 currentDirection = "right";
                 walkingLeft = false;
                 walkingRight = true;
             }
         }
-
-        if (walkingRight == true)
+        else
         {
             transform.localScale = new Vector3(-1, 1, 1);
             velocity += new Vector2(acceleration, 0);
-            GetComponent<Rigidbody2D>().velocity = velocity;
 
             if (transform.position.x >= origX)
             {
@@ -121,11 +159,17 @@ public class EnemyManager : MonoBehaviour
                 walkingRight = false;
                 walkingLeft = true;
             }
-        }
+		}
+
+		// Set velocity
+		GetComponent<Rigidbody2D>().velocity = velocity;
     }
 
 	void OnDrawGizmos()
 	{
+		if (GameManager.Player == null)
+			return;
+		
 		if (detectedPlayer)
 			Gizmos.color = Color.red;
 		Gizmos.DrawLine(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0));

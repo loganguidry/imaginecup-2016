@@ -12,7 +12,6 @@ public class PlayerController : MonoBehaviour
 	public float maxVelocity;
 	Vector2 velocity = Vector2.zero;
 	Transform weaponAnchor;
-	Transform userInterface;
 	string currentDirection = "right";
 
 	GameObject pistolWeapon;
@@ -28,7 +27,6 @@ public class PlayerController : MonoBehaviour
 	void Start()
 	{
 		weaponAnchor = transform.Find("WeaponAnchor");
-		userInterface = GameObject.Find("UI_Canvas").transform;
 
 		// Weapons
 		pistolWeapon = weaponAnchor.Find("Pistol").gameObject;
@@ -57,8 +55,9 @@ public class PlayerController : MonoBehaviour
 		// Jump
 		if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
 		{
-			RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, 0.1f, groundLayerMask);
-			if (hit.transform != null)
+			RaycastHit2D hitLeft = Physics2D.Raycast(transform.position + new Vector3(-0.3f, 0, 0), Vector3.down, 0.1f, groundLayerMask);
+			RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(0.3f, 0, 0), Vector3.down, 0.1f, groundLayerMask);
+			if (hitLeft.transform != null || hitRight.transform != null)
 				velocity += new Vector2(0, -velocity.y + jumpPower);
 		}
 
@@ -182,7 +181,7 @@ public class PlayerController : MonoBehaviour
 
 		// Text popup
 		GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
-		clonedPowText.transform.SetParent(userInterface);
+		clonedPowText.transform.SetParent(GameManager.UserInterface);
 
 		// Display bullet trail
 		if (CurrentWeapon.name == "Pistol" || CurrentWeapon.name == "Rifle")
