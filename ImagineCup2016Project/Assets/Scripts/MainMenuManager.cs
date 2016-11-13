@@ -10,6 +10,7 @@ public class MainMenuManager : MonoBehaviour
 	void Start ()
 	{
 		startPos = transform.position;
+		Cursor.visible = false;
 	}
 
 	void Update ()
@@ -23,8 +24,6 @@ public class MainMenuManager : MonoBehaviour
 		Rect cr = GetComponent<Camera>().pixelRect;
 		Vector3 middle = GetComponent<Camera>().ScreenToWorldPoint(new Vector3(cr.width / 2f, cr.height / 2f, 0));
 		Vector3 diff = mousePos - middle;
-		float dist = diff.magnitude;
-		print(dist);
 
 		// Move camera slightly
 		transform.position = startPos;

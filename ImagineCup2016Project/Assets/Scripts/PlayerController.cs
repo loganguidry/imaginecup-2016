@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
 	static public float MinimumX;
+	static public float MaximumX;
 	public float acceleration;
 	public float jumpPower;
 	public GameObject bangPowTextPopup;
@@ -47,24 +48,32 @@ public class PlayerController : MonoBehaviour
 		velocity = GetComponent<Rigidbody2D>().velocity;
 
 		// Move left and right
-		if (Input.GetKey(KeyCode.A))
+		if (Input.GetKey(KeyCode.A) && !GameManager.PlayerDead)
 			velocity += new Vector2(-acceleration, 0);
-		if (Input.GetKey(KeyCode.D))
+		if (Input.GetKey(KeyCode.D) && !GameManager.PlayerDead)
 			velocity += new Vector2(acceleration, 0);
 
 		// Jump
 		if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
 		{
-			RaycastHit2D hitLeft = Physics2D.Raycast(transform.position + new Vector3(-0.3f, 0, 0), Vector3.down, 0.1f, groundLayerMask);
-			RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(0.3f, 0, 0), Vector3.down, 0.1f, groundLayerMask);
-			if (hitLeft.transform != null || hitRight.transform != null)
-				velocity += new Vector2(0, -velocity.y + jumpPower);
+			if (!GameManager.PlayerDead)
+			{
+				RaycastHit2D hitLeft = Physics2D.Raycast(transform.position + new Vector3(-0.3f, 0, 0), Vector3.down, 0.1f, groundLayerMask);
+				RaycastHit2D hitRight = Physics2D.Raycast(transform.position + new Vector3(0.3f, 0, 0), Vector3.down, 0.1f, groundLayerMask);
+				if (hitLeft.transform != null || hitRight.transform != null)
+					velocity += new Vector2(0, -velocity.y + jumpPower);
+			}
 		}
 
 		// Keep in the level
 		if (transform.position.x < MinimumX)
 		{
 			transform.position = new Vector3(MinimumX, transform.position.y, transform.position.z);
+			velocity = new Vector2(0f, velocity.y);
+		}
+		if (transform.position.x > MaximumX)
+		{
+			transform.position = new Vector3(MaximumX, transform.position.y, transform.position.z);
 			velocity = new Vector2(0f, velocity.y);
 		}
 
@@ -104,6 +113,10 @@ public class PlayerController : MonoBehaviour
 
 	void Weapon()
 	{
+		// Player is dead
+		if (GameManager.PlayerDead)
+			return;
+		
 		// Switch weapon
 		if (Input.GetKeyDown(KeyCode.Q))
 		{
@@ -176,6 +189,10 @@ public class PlayerController : MonoBehaviour
 
 	void FireWeapon()
 	{
+		// Player is dead
+		if (GameManager.PlayerDead)
+			return;
+
 		// Shake camera
 		CameraShake.Kick(0.025f);
 

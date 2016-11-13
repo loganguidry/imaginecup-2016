@@ -72,7 +72,7 @@ public class EnemyManager : MonoBehaviour
 
         // Checks if a raycast hit the player
         detectedPlayer = false;
-        if (hit.transform != null && hit.transform.tag == "Player" && closeY)
+		if (hit.transform != null && hit.transform.tag == "Player" && closeY && !GameManager.PlayerDead)
         {
             if (cooldown <= 0.0f)
             {
@@ -93,14 +93,19 @@ public class EnemyManager : MonoBehaviour
             lastJumpTime = Time.time;
             GetComponent<Rigidbody2D>().velocity += new Vector2(0, jumpPower);
             velocity += new Vector2(0, jumpPower);
-        }
+		}
 
-        // Keep in the level
-        if (transform.position.x < PlayerController.MinimumX)
-        {
-            transform.position = new Vector3(PlayerController.MinimumX, transform.position.y, transform.position.z);
-            velocity = new Vector2(0f, velocity.y);
-        }
+		// Keep in the level
+		if (transform.position.x < PlayerController.MinimumX)
+		{
+			transform.position = new Vector3(PlayerController.MinimumX, transform.position.y, transform.position.z);
+			velocity = new Vector2(0f, velocity.y);
+		}
+		if (transform.position.x > PlayerController.MaximumX)
+		{
+			transform.position = new Vector3(PlayerController.MaximumX, transform.position.y, transform.position.z);
+			velocity = new Vector2(0f, velocity.y);
+		}
 
         if (enemyHealth <= 0.0f)
         {

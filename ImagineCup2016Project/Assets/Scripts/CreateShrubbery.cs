@@ -17,6 +17,8 @@ public class CreateShrubbery : MonoBehaviour
 
 			// Choose a random shrubbery
 			GameObject randomShrubbery = shrubberies[Random.Range(0, shrubberies.Length)];
+			if (randomShrubbery.name.StartsWith("Cloud") && Random.Range(0, 10) > 2)
+				return;
 
 			// Create the shrubbery
 			GameObject clonedShrubbery = Instantiate(randomShrubbery, Vector3.zero, Quaternion.identity) as GameObject;
