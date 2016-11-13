@@ -46,6 +46,8 @@ public class EnemyManager : MonoBehaviour
         walkingLeft = true;
         walkingRight = false;
 
+        cooldown = 0;
+
         currentDirection = "left";
     }
 
@@ -58,6 +60,14 @@ public class EnemyManager : MonoBehaviour
 		detectedPlayer = false;
         if (hit.transform != null && hit.transform.tag == "Player")
         {
+            cooldown -= Time.deltaTime;
+
+            if (cooldown <= 0.0f)
+            {
+                attackPlayer();
+                cooldown = 1.0f;
+            }
+            
             detectedPlayer = true;
         }
         else
@@ -66,6 +76,22 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    void attackPlayer()
+    {
+
+		if (GameManager.Player.transform.position.x < transform.position.x)
+        {
+            Instantiate(enemyBullet, new Vector3(transform.position.x  - 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(180, 0, 180)));
+        }
+
+        else 
+        {
+            Debug.Log("Test");
+            Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(-90, 0, 0)));
+        }
+
+
+    }
 	void idleMovement ()
 	{
         acceleration = 0.1f;
