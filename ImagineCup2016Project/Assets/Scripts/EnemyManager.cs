@@ -27,7 +27,6 @@ public class EnemyManager : MonoBehaviour
     private bool walkingRight;
 
     public GameObject enemyBullet;
-    public GameObject playerObj;
 
     private float origX;
     private float origY;
@@ -78,19 +77,14 @@ public class EnemyManager : MonoBehaviour
 
     void attackPlayer()
     {
-
 		if (GameManager.Player.transform.position.x < transform.position.x)
         {
             Instantiate(enemyBullet, new Vector3(transform.position.x  - 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(180, 0, 180)));
         }
-
         else 
         {
-            Debug.Log("Test");
-            Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(-90, 0, 0)));
+			Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.identity);
         }
-
-
     }
 	void idleMovement ()
 	{
