@@ -39,9 +39,6 @@ public class GameManager : MonoBehaviour
 			// Create the shrubbery
 			GameObject clonedShrubbery = Instantiate(randomShrubbery, Vector3.zero, Quaternion.identity) as GameObject;
 		}
-
-		// Damage player (debugging)
-		DamagePlayer(0.2f);
 	}
 
 	static public void DamagePlayer(float amount)

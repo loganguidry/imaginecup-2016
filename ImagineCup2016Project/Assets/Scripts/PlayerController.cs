@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
 
 	float lastWeaponShootTime;
 
+	public LayerMask groundLayerMask;
+
 	void Start()
 	{
 		weaponAnchor = transform.Find("WeaponAnchor");
@@ -54,7 +56,11 @@ public class PlayerController : MonoBehaviour
 
 		// Jump
 		if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
-			velocity += new Vector2(0, -velocity.y + jumpPower);
+		{
+			RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, 0.1f, groundLayerMask);
+			if (hit.transform != null)
+				velocity += new Vector2(0, -velocity.y + jumpPower);
+		}
 
 		// Keep in the level
 		if (transform.position.x < MinimumX)
@@ -75,7 +81,7 @@ public class PlayerController : MonoBehaviour
 		if (!circularAiming)
 		{
 			// Set direction
-			if (Time.time - lastWeaponShootTime >= 0.25f)
+			if (Time.time - lastWeaponShootTime >= 0.35f)
 			{
 				if (velocity.x > 0)
 					currentDirection = "right";
@@ -99,6 +105,23 @@ public class PlayerController : MonoBehaviour
 
 	void Weapon()
 	{
+		// Switch weapon
+		if (Input.GetKeyDown(KeyCode.Q))
+		{
+			// Hide weapons
+			pistolWeapon.GetComponent<SpriteRenderer>().enabled = false;
+			rifleWeapon.GetComponent<SpriteRenderer>().enabled = false;
+
+			// Change weapon
+			if (CurrentWeapon.name == "Pistol")
+				CurrentWeapon = rifleWeapon;
+			else if (CurrentWeapon.name == "Rifle")
+				CurrentWeapon = pistolWeapon;
+
+			// Show weapons
+			CurrentWeapon.GetComponent<SpriteRenderer>().enabled = true;
+		}
+
 		if (circularAiming)
 		{
 			// Point weapon towards mouse
@@ -110,41 +133,44 @@ public class PlayerController : MonoBehaviour
 			weaponAnchor.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 
 			// Fire weapon by mouse click
-			if (Input.GetMouseButtonDown(0))
+			if (Input.GetMouseButtonDown(0) && Time.time - lastWeaponShootTime >= CurrentWeapon.GetComponent<WeaponProperties>().delay)
 				FireWeapon();
 		}
 		else
 		{
-			// Point weapon in specified direction
-			bool shoot = false;
-			if (Input.GetKeyDown(KeyCode.LeftArrow))
+			if (Time.time - lastWeaponShootTime >= CurrentWeapon.GetComponent<WeaponProperties>().delay)
 			{
-				shoot = true;
-				currentDirection = "left";
-			}
-			if (Input.GetKeyDown(KeyCode.RightArrow))
-			{
-				shoot = true;
-				currentDirection = "right";
-			}
-
-			if (shoot)
-			{
-				// Point in a direction
-				transform.Find("Sprite").localScale = new Vector3(1, 1, 1);
-				if (currentDirection == "left")
+				// Point weapon in specified direction
+				bool shoot = false;
+				if (Input.GetKey(KeyCode.LeftArrow))
 				{
-					weaponAnchor.rotation = Quaternion.Euler(new Vector3(180, 0, 180));
-					transform.Find("Sprite").localScale = new Vector3(-1, 1, 1);
+					shoot = true;
+					currentDirection = "left";
 				}
-				else
+				if (Input.GetKey(KeyCode.RightArrow))
 				{
-					weaponAnchor.rotation = Quaternion.Euler(Vector3.zero);
+					shoot = true;
+					currentDirection = "right";
 				}
 
-				// Fire weapon
-				FireWeapon();
-				lastWeaponShootTime = Time.time;
+				if (shoot)
+				{
+					// Point in a direction
+					transform.Find("Sprite").localScale = new Vector3(1, 1, 1);
+					if (currentDirection == "left")
+					{
+						weaponAnchor.rotation = Quaternion.Euler(new Vector3(180, 0, 180));
+						transform.Find("Sprite").localScale = new Vector3(-1, 1, 1);
+					}
+					else
+					{
+						weaponAnchor.rotation = Quaternion.Euler(Vector3.zero);
+					}
+
+					// Fire weapon
+					FireWeapon();
+					lastWeaponShootTime = Time.time;
+				}
 			}
 		}
 	}

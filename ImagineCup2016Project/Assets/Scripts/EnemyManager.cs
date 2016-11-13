@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class EnemyManager : MonoBehaviour
 {
+	public LayerMask layerMask;
+
 	//Remaining 'health' of the enemy. (Pistols can take away 1, rifles,2.5, maybe boomerangs 5?)
 	private float enemyHealth;
 
@@ -19,12 +21,13 @@ public class EnemyManager : MonoBehaviour
 	Vector2 velocity = Vector2.zero;
 	public float acceleration;
 
-	private string currentDirection = "right";
+    private string currentDirection;
 
     private bool walkingLeft;
     private bool walkingRight;
 
     public GameObject enemyBullet;
+    public GameObject playerObj;
 
     private float origX;
     private float origY;
@@ -43,110 +46,62 @@ public class EnemyManager : MonoBehaviour
         walkingLeft = true;
         walkingRight = false;
 
+        currentDirection = "left";
     }
-
-	/*
-	void FixedUpdate ()
-	{
-		//Raycast left
-		Ray rayLeft = new Ray (transform.position, new Vector3(-5.0f,0.0f,0.0f));
-		
-		//Distance to check for player (temp for now till we figure out what we want)
-		float rayDistance = 100.0f;
-		
-		//Hit Info
-		RaycastHit hitInfo;
-		
-		// Set bool for if enemy detected player according to Raycast
-		detectedPlayer = Physics.Raycast (rayLeft, out hitInfo, rayDistance);
-		
-		if (detectedPlayer) {
-			
-			Debug.Log("Test");
-		}
-	}
-	*/
 
 	void Update()
 	{
-		// Don't detect enemies
-		int layerMask = 1 << 9;
-		layerMask = ~layerMask;
-
-
 		// Fire raycast
-		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 10f, layerMask);
+		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 5f, layerMask);
 
 		// Checks if a raycast hit the player
 		detectedPlayer = false;
         if (hit.transform != null && hit.transform.tag == "Player")
         {
-
-            Debug.Log("Freedom");
             detectedPlayer = true;
         }
-        else {
-
+        else
+		{
             idleMovement();
-            Debug.Log("Fresnos");
         }
-
-        if (detectedPlayer == true)
-        {
-           // Instantiate(enemyBullet)
-        }
-		// The player has been detected
-
-	}
+    }
 
 	void idleMovement ()
 	{
-
         acceleration = 0.1f;
         velocity = GetComponent<Rigidbody2D>().velocity;
 
         //velocity += new Vector2(-acceleration, 0);
 
-
-
-
-
         if (walkingLeft == true)
         {
+            transform.localScale = new Vector3(1, 1, 1);
 
-
-
-
+            currentDirection = "left";
             velocity += new Vector2(-acceleration, 0);
             GetComponent<Rigidbody2D>().velocity = velocity;
 
             if (origX > transform.position.x + 2.5f)
             {
+                currentDirection = "right";
                 walkingLeft = false;
                 walkingRight = true;
             }
-
         }
 
         if (walkingRight == true)
         {
-
+            transform.localScale = new Vector3(-1, 1, 1);
             velocity += new Vector2(acceleration, 0);
             GetComponent<Rigidbody2D>().velocity = velocity;
 
-
             if (transform.position.x >= origX)
             {
+                currentDirection = "left";
                 walkingRight = false;
                 walkingLeft = true;
-
             }
-
-
-
         }
-
-
     }
 
 	void OnDrawGizmos()

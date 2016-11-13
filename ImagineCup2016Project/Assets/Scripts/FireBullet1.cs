@@ -3,11 +3,11 @@ using System.Collections;
 
 public class FireBullet1 : MonoBehaviour
 {
+	public LayerMask layerMask;
+
 	void Start ()
 	{
 		// Fire a raycast to get the first object
-		int layerMask = 1 << 9;
-		layerMask = ~layerMask;
 		RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.right, 10f, layerMask);
 		if (hit.transform != null && hit.transform.tag != "Enemy")
 		{
