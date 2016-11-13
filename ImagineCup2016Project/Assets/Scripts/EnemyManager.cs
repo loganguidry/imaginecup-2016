@@ -21,16 +21,29 @@ public class EnemyManager : MonoBehaviour
 
 	private string currentDirection = "right";
 
-	// Use this for initialization
-	void Start ()
+    private bool walkingLeft;
+    private bool walkingRight;
+
+    public GameObject enemyBullet;
+
+    private float origX;
+    private float origY;
+
+    // Use this for initialization
+    void Start ()
 	{
 		//Set starting health to 5 and isAlive to true
 		enemyHealth = 5.0f;
 		isAlive = true;
 		detectedPlayer = false;
 
-		cooldown = 5;
-	}
+        origX = transform.position.x;
+        origY = transform.position.y;
+
+        walkingLeft = true;
+        walkingRight = false;
+
+    }
 
 	/*
 	void FixedUpdate ()
@@ -60,48 +73,81 @@ public class EnemyManager : MonoBehaviour
 		int layerMask = 1 << 9;
 		layerMask = ~layerMask;
 
+
 		// Fire raycast
 		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 10f, layerMask);
 
 		// Checks if a raycast hit the player
 		detectedPlayer = false;
-		if (hit.transform != null && hit.transform.tag == "Player")
-			detectedPlayer = true;
+        if (hit.transform != null && hit.transform.tag == "Player")
+        {
 
+            Debug.Log("Freedom");
+            detectedPlayer = true;
+        }
+        else {
+
+            idleMovement();
+            Debug.Log("Fresnos");
+        }
+
+        if (detectedPlayer == true)
+        {
+           // Instantiate(enemyBullet)
+        }
 		// The player has been detected
-		if (detectedPlayer)
-		{
-			print("detected player");
-		}
-		else
-			idleMovement ();
+
 	}
 
 	void idleMovement ()
 	{
-	
-		acceleration = 0.1f;
-		velocity = GetComponent<Rigidbody2D>().velocity;
 
-		//velocity += new Vector2(-acceleration, 0);
+        acceleration = 0.1f;
+        velocity = GetComponent<Rigidbody2D>().velocity;
 
-		GetComponent<Rigidbody2D>().velocity = velocity;
-
-		if (velocity.x > 0) {
-		
+        //velocity += new Vector2(-acceleration, 0);
 
 
-			currentDirection = "right";
 
-		
-		} else if (velocity.x < 0) {
-		
-			currentDirection = "left";
-		}
-			
 
-	
-	}
+
+        if (walkingLeft == true)
+        {
+
+
+
+
+            velocity += new Vector2(-acceleration, 0);
+            GetComponent<Rigidbody2D>().velocity = velocity;
+
+            if (origX > transform.position.x + 2.5f)
+            {
+                walkingLeft = false;
+                walkingRight = true;
+            }
+
+        }
+
+        if (walkingRight == true)
+        {
+
+            velocity += new Vector2(acceleration, 0);
+            GetComponent<Rigidbody2D>().velocity = velocity;
+
+
+            if (transform.position.x >= origX)
+            {
+                walkingRight = false;
+                walkingLeft = true;
+
+            }
+
+
+
+        }
+
+
+    }
 
 	void OnDrawGizmos()
 	{
