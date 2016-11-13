@@ -23,21 +23,19 @@ public class GameManager : MonoBehaviour
 
 	static public List<GameObject> Enemies = new List<GameObject>();
 
+	static public GameObject go_Screen;
+
 	void Start()
 	{
-		DamageIndicatorPrefab = damageIndicatorPrefab;
 		UserInterface = GameObject.Find("UI_Canvas").transform;
 		Player = GameObject.Find("Player");
-		PlayerHealth = 100f;
+		PlayerDead = false;
+		PlayerWon = false;
+		Physics.gravity = new Vector3(0, -gravity, 0);
 		PlayerController.MinimumX = minX;
 		PlayerController.MaximumX = maxX;
-		Physics.gravity = new Vector3(0, -gravity, 0);
-
-		// Player should pass through enemies
-		Physics2D.IgnoreLayerCollision(8, 9, true);
-
-		// Enemies should pass through enemies
-		Physics2D.IgnoreLayerCollision(9, 9, true);
+		DamageIndicatorPrefab = damageIndicatorPrefab;
+		PlayerHealth = 100f;
 
 		// Reference health display hearts
 		for(int i = 0; i < 3; i++)
@@ -49,6 +47,16 @@ public class GameManager : MonoBehaviour
 			if (obj.name.StartsWith("Enemy"))
 				Enemies.Add(obj);
 		}
+
+		// Gameover screen
+		go_Screen = GameObject.Find("GameOverScreen_GO");
+		go_Screen.SetActive(false);
+
+		// Player should pass through enemies
+		Physics2D.IgnoreLayerCollision(8, 9, true);
+
+		// Enemies should pass through enemies
+		Physics2D.IgnoreLayerCollision(9, 9, true);
 	}
 
 	void Update()
@@ -122,6 +130,7 @@ public class GameManager : MonoBehaviour
 	{
 		print("Player died [GameManager.cs - Die()]");
 		PlayerDead = true;
+		go_Screen.SetActive(true);
 
 		// Text display
 		GameObject.Find("GameOverHeaderText").GetComponent<Text>().text = "Game Over!";
@@ -132,10 +141,11 @@ public class GameManager : MonoBehaviour
 	{
 		print("Player won [GameManager.cs - Win()]");
 		PlayerWon = true;
+		go_Screen.SetActive(true);
 
 		// Text display
 		GameObject.Find("GameOverHeaderText").GetComponent<Text>().text = "You Win!";
-		GameObject.Find("GameOverHeaderText").GetComponent<Text>().color = Color.cyan;
+		GameObject.Find("GameOverHeaderText").GetComponent<Text>().color = new Color(0.25f, 1f, 0.75f);
 	}
 
 	public void RestartScene()

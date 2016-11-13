@@ -198,7 +198,7 @@ public class PlayerController : MonoBehaviour
 
 		// Text popup
 		GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
-		clonedPowText.transform.SetParent(GameManager.UserInterface);
+		clonedPowText.transform.SetParent(GameManager.UserInterface.Find("TextPopupParent_UI"));
 
 		// Display bullet trail
 		if (CurrentWeapon.name == "Pistol" || CurrentWeapon.name == "Rifle")
