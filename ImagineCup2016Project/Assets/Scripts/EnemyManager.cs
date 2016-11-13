@@ -14,11 +14,11 @@ public class EnemyManager : MonoBehaviour
     public bool isAlive;
 
     //Bool for if they have detected player yet or not
-    private bool detectedPlayer;
+    public bool detectedPlayer;
 
     public float cooldown;
 
-    Vector2 velocity = Vector2.zero;
+    public Vector2 velocity = Vector2.zero;
     public float acceleration;
 
     private string currentDirection;
@@ -39,6 +39,8 @@ public class EnemyManager : MonoBehaviour
     float lastJumpTime;
 
     public float yCloseness;
+
+	Vector3 barrelOffset = new Vector3(0.582f, 0.234f, 0f);
 
     // Use this for initialization
     void Start()
@@ -111,10 +113,17 @@ public class EnemyManager : MonoBehaviour
 			velocity = new Vector2(0f, velocity.y);
 		}
 
+		// Die
         if (enemyHealth <= 0.0f)
         {
             onDeath();
         }
+
+		// Face direction
+		if (currentDirection == "right")
+			transform.localScale = new Vector3(1, 1, 1);
+		else
+			transform.localScale = new Vector3(-1, 1, 1);
     }
 
     void attackPlayer()
@@ -122,12 +131,12 @@ public class EnemyManager : MonoBehaviour
         // Create bullet
         if (GameManager.Player.transform.position.x < transform.position.x)
         {
-            Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(180, 0, 180)));
+			Instantiate(enemyBullet, transform.position + new Vector3(-barrelOffset.x, barrelOffset.y, barrelOffset.z), Quaternion.Euler(new Vector3(180, 0, 180)));
             currentDirection = "left";
         }
         else
         {
-            Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.identity);
+			Instantiate(enemyBullet, transform.position + new Vector3(barrelOffset.x, barrelOffset.y, barrelOffset.z), Quaternion.identity);
             currentDirection = "right";
         }
 
@@ -135,7 +144,7 @@ public class EnemyManager : MonoBehaviour
         Camera.main.transform.GetChild(0).GetComponent<AudioSource>().PlayOneShot(gunshotSound);
 
         // Shake camera
-        CameraShake.Kick(0.025f);
+        //CameraShake.Kick(0.025f);
 
         // Text popup
         //GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
@@ -152,8 +161,6 @@ public class EnemyManager : MonoBehaviour
         // Walk back and forth
         if (walkingLeft)
         {
-            transform.localScale = new Vector3(1, 1, 1);
-
             currentDirection = "left";
             velocity += new Vector2(-acceleration, 0);
 
@@ -165,13 +172,12 @@ public class EnemyManager : MonoBehaviour
             }
         }
         else
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
+		{
+			currentDirection = "right";
             velocity += new Vector2(acceleration, 0);
 
             if (transform.position.x >= origX)
             {
-                currentDirection = "left";
                 walkingRight = false;
                 walkingLeft = true;
             }

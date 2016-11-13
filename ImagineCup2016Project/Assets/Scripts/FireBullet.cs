@@ -4,6 +4,7 @@ using System.Collections;
 public class FireBullet : MonoBehaviour
 {
 	public LayerMask layerMask;
+	public AudioClip ricochet;
 
 	void Start ()
 	{
@@ -19,6 +20,10 @@ public class FireBullet : MonoBehaviour
 			float currentWeaponDamage = GameManager.Player.GetComponent<PlayerController>().CurrentWeapon.GetComponent<WeaponProperties>().damage;
 			if (hit.transform.tag == "Enemy")
 				hit.transform.GetComponent<EnemyManager>().TakeDamage(currentWeaponDamage);
+		
+			// Ricochet sound effect
+			if ((hit.point - new Vector2(GameManager.Player.transform.position.x, GameManager.Player.transform.position.y)).magnitude <= 2f && Random.Range(1, 10) == 1)
+				Camera.main.transform.GetChild(0).GetComponent<AudioSource>().PlayOneShot(ricochet, Random.Range(0.8f, 1.2f));
 		}
 	}
 }

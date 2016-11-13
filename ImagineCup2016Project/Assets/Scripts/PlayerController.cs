@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour
 			return;
 		
 		// Switch weapon
-		if (Input.GetKeyDown(KeyCode.Q))
+		/*if (Input.GetKeyDown(KeyCode.Q))
 		{
 			// Hide weapons
 			pistolWeapon.GetComponent<SpriteRenderer>().enabled = false;
@@ -129,13 +129,19 @@ public class PlayerController : MonoBehaviour
 
 			// Change weapon
 			if (CurrentWeapon.name == "Pistol")
+			{
 				CurrentWeapon = rifleWeapon;
+				transform.GetChild(0).GetChild(0).GetComponent<AnimationScript>().currentAnim = "Player Rifle";
+			}
 			else if (CurrentWeapon.name == "Rifle")
+			{
 				CurrentWeapon = pistolWeapon;
+				transform.GetChild(0).GetChild(0).GetComponent<AnimationScript>().currentAnim = "Player Pistol";
+			}
 
 			// Show weapons
 			CurrentWeapon.GetComponent<SpriteRenderer>().enabled = true;
-		}
+		}*/
 
 		if (circularAiming)
 		{
@@ -197,7 +203,10 @@ public class PlayerController : MonoBehaviour
 			return;
 
 		// Shake camera
-		CameraShake.Kick(0.025f);
+		if (CurrentWeapon.name == "Pistol")
+			CameraShake.Kick(0.033f);
+		if (CurrentWeapon.name == "Rifle")
+			CameraShake.Kick(0.05f);
 
 		// Text popup
 		GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;

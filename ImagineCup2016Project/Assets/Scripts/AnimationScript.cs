@@ -11,6 +11,8 @@ public class AnimationScript : MonoBehaviour
 	public Sprite[] playerRifle = new Sprite[10];
 	public Sprite playerRifleStill;
 	public Sprite[] enemy = new Sprite[10];
+	public Sprite enemyStill;
+	public Sprite enemyAim;
 
 	void Update()
 	{
@@ -48,8 +50,27 @@ public class AnimationScript : MonoBehaviour
 		}
 		else if (currentAnim == "Enemy")
 		{
-			int index = Mathf.FloorToInt((Time.time * fps) % enemy.Length);
-			GetComponent<SpriteRenderer>().sprite = enemy[index];
+			//if (transform.parent.GetComponent<EnemyManager>().velocity.magnitude <= 0.01f)
+			if (transform.parent.GetComponent<Rigidbody2D>().velocity.magnitude <= 1f)
+			{
+				// Still frame
+				if (transform.parent.GetComponent<EnemyManager>().detectedPlayer)
+				{
+					GetComponent<SpriteRenderer>().sprite = enemyAim;
+					transform.localPosition = new Vector3(0.183f, transform.localPosition.y, transform.localPosition.z);
+				}
+				else
+				{
+					GetComponent<SpriteRenderer>().sprite = enemyStill;
+					transform.localPosition = new Vector3(0.017f, transform.localPosition.y, transform.localPosition.z);
+				}
+			}
+			else
+			{
+				// Animate
+				int index = Mathf.FloorToInt((Time.time * fps) % enemy.Length);
+				GetComponent<SpriteRenderer>().sprite = enemy[index];
+			}
 		}
 		else
 			print("Not a valid animation name in AnimationScript.cs");
