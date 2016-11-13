@@ -38,6 +38,8 @@ public class EnemyManager : MonoBehaviour
 	public float minJumpDelay = 3f;
 	float lastJumpTime;
 
+	public float yCloseness;
+
     // Use this for initialization
     void Start ()
 	{
@@ -66,7 +68,7 @@ public class EnemyManager : MonoBehaviour
 		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 5f, layerMask);
 
 		// Check if player Y position is close enough
-		bool closeY = Mathf.Abs(GameManager.Player.transform.position.y - transform.position.y) <= 1.5f;
+		bool closeY = Mathf.Abs(GameManager.Player.transform.position.y - transform.position.y) <= yCloseness;
 
 		// Checks if a raycast hit the player
 		detectedPlayer = false;
