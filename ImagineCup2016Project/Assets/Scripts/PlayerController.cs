@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 	public GameObject bulletPrefab;
 	public bool circularAiming;
 	public float maxVelocity;
-	Vector2 velocity = Vector2.zero;
+	public Vector2 velocity = Vector2.zero;
 	Transform weaponAnchor;
 	string currentDirection = "right";
 
@@ -108,6 +108,9 @@ public class PlayerController : MonoBehaviour
 			{
 				weaponAnchor.rotation = Quaternion.Euler(Vector3.zero);
 			}
+
+			// Walk backwards
+			transform.Find("Sprite").Find("Character").GetComponent<AnimationScript>().playForward = !((velocity.x > 0.01f && currentDirection == "left") || (velocity.x < -0.01f && currentDirection == "right"));
 		}
 	}
 

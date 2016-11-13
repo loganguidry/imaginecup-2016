@@ -63,16 +63,21 @@ public class GameManager : MonoBehaviour
 	{
 		// Win if all enemies are dead
 		bool allDead = true;
+		int aliveEnemies = 0;
 		foreach (GameObject obj in Enemies)
 		{
 			try
 			{
 				if (obj.GetComponent<EnemyManager>().isAlive)
+				{
 					allDead = false;
+					aliveEnemies++;
+				}
 			} catch {}
 		}
 		if (allDead)
 			Win();
+		GameObject.Find("RemainingEnemies_UI").GetComponent<Text>().text = aliveEnemies.ToString() + " Enemies Alive";
 	}
 
 	static public void DamagePlayer(float amount)

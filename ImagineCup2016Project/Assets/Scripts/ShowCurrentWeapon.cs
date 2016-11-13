@@ -5,12 +5,12 @@ using System.Collections;
 public class ShowCurrentWeapon : MonoBehaviour
 {
 	Text txt;
-	Text hintTxt;
+	//Text hintTxt;
 
 	void Start()
 	{
 		txt = GetComponent<Text>();
-		hintTxt = transform.GetChild(1).GetComponent<Text>();
+		//hintTxt = transform.GetChild(1).GetComponent<Text>();
 	}
 
 	void Update()
@@ -18,8 +18,10 @@ public class ShowCurrentWeapon : MonoBehaviour
 		if (GameManager.PlayerDead || GameManager.PlayerWon)
 		{
 			txt.text = "";
-			hintTxt.text = "";
-			GetComponentInChildren<Image>().enabled = false;
+			//hintTxt.text = "";
+			//hintTxt.transform.GetChild(0).GetComponent<Image>().enabled = false;
+			transform.Find("CurrentWeaponImage").GetComponent<Image>().enabled = false;
+			transform.Find("SwapWithQ").GetComponent<Image>().enabled = false;
 		}
 		else
 		{
