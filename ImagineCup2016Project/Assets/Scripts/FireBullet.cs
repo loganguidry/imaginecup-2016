@@ -17,6 +17,8 @@ public class FireBullet : MonoBehaviour
 
 			// Damage enemy (if you hit an enemy)
 			float currentWeaponDamage = GameManager.Player.GetComponent<PlayerController>().CurrentWeapon.GetComponent<WeaponProperties>().damage;
+			if (hit.transform.tag == "Enemy")
+				hit.transform.GetComponent<EnemyManager>().TakeDamage(currentWeaponDamage);
 		}
 	}
 }

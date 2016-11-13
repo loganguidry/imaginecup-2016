@@ -5,21 +5,21 @@ using System.Collections.Generic;
 
 public class EnemyManager : MonoBehaviour
 {
-	public LayerMask layerMask;
+    public LayerMask layerMask;
 
-	//Remaining 'health' of the enemy. (Pistols can take away 1, rifles,2.5, maybe boomerangs 5?)
-	private float enemyHealth;
+    //Remaining 'health' of the enemy. (Pistols can take away 1, rifles,2.5, maybe boomerangs 5?)
+    private float enemyHealth;
 
-	//Bool to check if enemy is alive
-	private bool isAlive;
+    //Bool to check if enemy is alive
+    private bool isAlive;
 
-	//Bool for if they have detected player yet or not
-	private bool detectedPlayer;
+    //Bool for if they have detected player yet or not
+    private bool detectedPlayer;
 
-	public float cooldown;
+    public float cooldown;
 
-	Vector2 velocity = Vector2.zero;
-	public float acceleration;
+    Vector2 velocity = Vector2.zero;
+    public float acceleration;
 
     private string currentDirection;
 
@@ -31,22 +31,22 @@ public class EnemyManager : MonoBehaviour
     private float origX;
     private float origY;
 
-	public AudioClip gunshotSound;
-	public GameObject bangPowTextPopup;
+    public AudioClip gunshotSound;
+    public GameObject bangPowTextPopup;
 
-	public float jumpPower = 15f;
-	public float minJumpDelay = 3f;
-	float lastJumpTime;
+    public float jumpPower = 15f;
+    public float minJumpDelay = 3f;
+    float lastJumpTime;
 
-	public float yCloseness;
+    public float yCloseness;
 
     // Use this for initialization
-    void Start ()
-	{
-		//Set starting health to 5 and isAlive to true
-		enemyHealth = 5.0f;
-		isAlive = true;
-		detectedPlayer = false;
+    void Start()
+    {
+        //Set starting health to 100 and isAlive to true
+        enemyHealth = 100.0f;
+        isAlive = true;
+        detectedPlayer = false;
 
         origX = transform.position.x;
         origY = transform.position.y;
@@ -59,19 +59,19 @@ public class EnemyManager : MonoBehaviour
         currentDirection = "left";
     }
 
-	void Update()
-	{
-		// Weapon cooldown
-		cooldown -= Time.deltaTime;
+    void Update()
+    {
+        // Weapon cooldown
+        cooldown -= Time.deltaTime;
 
-		// Fire raycast
-		RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 5f, layerMask);
+        // Fire raycast
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0) - transform.position, 5f, layerMask);
 
-		// Check if player Y position is close enough
-		bool closeY = Mathf.Abs(GameManager.Player.transform.position.y - transform.position.y) <= yCloseness;
+        // Check if player Y position is close enough
+        bool closeY = Mathf.Abs(GameManager.Player.transform.position.y - transform.position.y) <= yCloseness;
 
-		// Checks if a raycast hit the player
-		detectedPlayer = false;
+        // Checks if a raycast hit the player
+        detectedPlayer = false;
         if (hit.transform != null && hit.transform.tag == "Player" && closeY)
         {
             if (cooldown <= 0.0f)
@@ -79,63 +79,68 @@ public class EnemyManager : MonoBehaviour
                 attackPlayer();
                 cooldown = 1.0f;
             }
-            
+
             detectedPlayer = true;
         }
         else
-		{
+        {
             idleMovement();
         }
 
-		// Randomly jump
-		if (Random.Range(0, 100) == 0 && Time.time - lastJumpTime >= minJumpDelay)
-		{
-			lastJumpTime = Time.time;
-			GetComponent<Rigidbody2D>().velocity += new Vector2(0, jumpPower);
-			velocity += new Vector2(0, jumpPower);
-		}
+        // Randomly jump
+        if (Random.Range(0, 100) == 0 && Time.time - lastJumpTime >= minJumpDelay)
+        {
+            lastJumpTime = Time.time;
+            GetComponent<Rigidbody2D>().velocity += new Vector2(0, jumpPower);
+            velocity += new Vector2(0, jumpPower);
+        }
 
-		// Keep in the level
-		if (transform.position.x < PlayerController.MinimumX)
-		{
-			transform.position = new Vector3(PlayerController.MinimumX, transform.position.y, transform.position.z);
-			velocity = new Vector2(0f, velocity.y);
-		}
+        // Keep in the level
+        if (transform.position.x < PlayerController.MinimumX)
+        {
+            transform.position = new Vector3(PlayerController.MinimumX, transform.position.y, transform.position.z);
+            velocity = new Vector2(0f, velocity.y);
+        }
+
+        if (enemyHealth <= 0.0f)
+        {
+            onDeath();
+        }
     }
 
     void attackPlayer()
     {
-		// Create bullet
-		if (GameManager.Player.transform.position.x < transform.position.x)
-		{
-			Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(180, 0, 180)));
-			currentDirection = "left";
-		}
-		else
-		{
-			Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.identity);
-			currentDirection = "right";
-		}
+        // Create bullet
+        if (GameManager.Player.transform.position.x < transform.position.x)
+        {
+            Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.Euler(new Vector3(180, 0, 180)));
+            currentDirection = "left";
+        }
+        else
+        {
+            Instantiate(enemyBullet, new Vector3(transform.position.x + 0.23f, transform.position.y, 0), Quaternion.identity);
+            currentDirection = "right";
+        }
 
-		// Play gunshot sound
-		Camera.main.transform.GetChild(0).GetComponent<AudioSource>().PlayOneShot(gunshotSound);
+        // Play gunshot sound
+        Camera.main.transform.GetChild(0).GetComponent<AudioSource>().PlayOneShot(gunshotSound);
 
-		// Shake camera
-		CameraShake.Kick(0.025f);
+        // Shake camera
+        CameraShake.Kick(0.025f);
 
-		// Text popup
-		//GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
-		//clonedPowText.transform.SetParent(GameManager.UserInterface);
+        // Text popup
+        //GameObject clonedPowText = Instantiate(bangPowTextPopup, Camera.main.WorldToScreenPoint(transform.position), Quaternion.identity) as GameObject;
+        //clonedPowText.transform.SetParent(GameManager.UserInterface);
     }
 
-	void idleMovement ()
-	{
-		// Get velocity
-		velocity = GetComponent<Rigidbody2D>().velocity;
+    void idleMovement()
+    {
+        // Get velocity
+        velocity = GetComponent<Rigidbody2D>().velocity;
 
         acceleration = 0.1f;
 
-		// Walk back and forth
+        // Walk back and forth
         if (walkingLeft)
         {
             transform.localScale = new Vector3(1, 1, 1);
@@ -161,19 +166,29 @@ public class EnemyManager : MonoBehaviour
                 walkingRight = false;
                 walkingLeft = true;
             }
-		}
+        }
 
-		// Set velocity
-		GetComponent<Rigidbody2D>().velocity = velocity;
+        // Set velocity
+        GetComponent<Rigidbody2D>().velocity = velocity;
     }
 
-	void OnDrawGizmos()
-	{
-		if (GameManager.Player == null)
-			return;
-		
-		if (detectedPlayer)
-			Gizmos.color = Color.red;
-		Gizmos.DrawLine(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0));
-	}
+    public void TakeDamage(float damage)
+    {
+
+        enemyHealth -= damage;
+    }
+
+    void onDeath()
+    {
+        Destroy(gameObject);
+    }
+    void OnDrawGizmos()
+    {
+        if (GameManager.Player == null)
+            return;
+
+        if (detectedPlayer)
+            Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, GameManager.Player.transform.position + new Vector3(0, 0.5f, 0));
+    }
 }

@@ -15,11 +15,19 @@ public class MainMenuManager : MonoBehaviour
 	void Update ()
 	{
 		// Start game
-
-		if (Input.anyKeyDown)
+		if (Input.GetKeyDown(KeyCode.Space))
 			SceneManager.LoadScene("level1");
+
+		// Get mouse position
+		Vector3 mousePos = GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
+		Rect cr = GetComponent<Camera>().pixelRect;
+		Vector3 middle = GetComponent<Camera>().ScreenToWorldPoint(new Vector3(cr.width / 2f, cr.height / 2f, 0));
+		Vector3 diff = mousePos - middle;
+		float dist = diff.magnitude;
+		print(dist);
 
 		// Move camera slightly
 		transform.position = startPos;
+		transform.Translate(diff * cameraMoveAmount);
 	}
 }
