@@ -10,7 +10,7 @@ public class MainMenuManager : MonoBehaviour
 	void Start ()
 	{
 		startPos = transform.position;
-		Cursor.visible = false;
+		//Cursor.visible = false;
 	}
 
 	void Update ()

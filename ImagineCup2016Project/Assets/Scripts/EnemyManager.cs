@@ -11,7 +11,7 @@ public class EnemyManager : MonoBehaviour
     private float enemyHealth;
 
     //Bool to check if enemy is alive
-    private bool isAlive;
+    public bool isAlive;
 
     //Bool for if they have detected player yet or not
     private bool detectedPlayer;
@@ -61,6 +61,10 @@ public class EnemyManager : MonoBehaviour
 
     void Update()
     {
+		// Enemy is dead
+		if (!isAlive)
+			return;
+
         // Weapon cooldown
         cooldown -= Time.deltaTime;
 
@@ -179,14 +183,17 @@ public class EnemyManager : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-
         enemyHealth -= damage;
     }
 
     void onDeath()
     {
-        Destroy(gameObject);
+		isAlive = false;
+		GetComponentInChildren<SpriteRenderer>().enabled = false;
+		GetComponent<BoxCollider2D>().enabled = false;
+        //Destroy(gameObject);
     }
+
     void OnDrawGizmos()
     {
         if (GameManager.Player == null)

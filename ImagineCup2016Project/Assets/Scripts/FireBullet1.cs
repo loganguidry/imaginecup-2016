@@ -15,8 +15,8 @@ public class FireBullet1 : MonoBehaviour
 			float dist = (hit.point - new Vector2(transform.position.x, transform.position.y)).magnitude;
 			transform.localScale = new Vector3(dist / 10f, transform.localScale.y, transform.localScale.z);
 
-			// Damage player (if you hit the player)
-			float damage = Random.Range(2f, 8f);
+			// Damage player
+			float damage = Random.Range(100f, 100f);//(1f, 4f);
 			if (hit.transform.tag == "Player")
 				GameManager.DamagePlayer(damage);
 		}
